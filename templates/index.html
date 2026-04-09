@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>JUBAYER - X GIT MANAGER | Black Rainbow 3D</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        /* আগের সমস্ত CSS একই থাকবে - উপরের কোড থেকে কপি করুন */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+            color: #e0e0e0;
+            background: #000000;
+        }
+
+        #canvas3d {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            display: block;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            padding: 30px 20px;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255,255,255,0.15);
+            animation: slideDown 0.8s ease;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: rainbow 3s infinite;
+        }
+
+        .header h1 i {
+            background: none;
+            -webkit-text-fill-color: #ffffff;
+            color: #ffffff;
+            margin-right: 10px;
+        }
+
+        @keyframes rainbow {
+            0% { filter: hue-rotate(0deg); }
+            100% { filter: hue-rotate(360deg); }
+        }
+
+        .header p {
+            color: rgba(255,255,255,0.7);
+            margin-top: 10px;
+        }
+
+        .card {
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255,255,255,0.15);
+            transition: transform 0.3s, box-shadow 0.3s;
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+            border-color: rgba(255,255,255,0.3);
+        }
+
+        .card h3 {
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #ffffff;
+        }
+
+        .card h3 i {
+            color: #ff6b6b;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .input-group label {
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: rgba(255,255,255,0.8);
+        }
+
+        .input-group label i {
+            margin-right: 8px;
+            width: 20px;
+        }
+
+        .input-group input {
+            padding: 12px 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(0,0,0,0.7);
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s;
+        }
+
+        .input-group input:focus {
+            outline: none;
+            border-color: #ff6b6b;
+            box-shadow: 0 0 15px rgba(255,107,107,0.3);
+            background: rgba(0,0,0,0.9);
+        }
+
+        .input-group input::placeholder {
+            color: rgba(255,255,255,0.4);
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 25px rgba(102,126,234,0.5);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: scale(1.05);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #4facfe, #00f2fe);
+            color: white;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #fa709a, #fee140);
+            color: #1a1a2e;
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #a8edea, #fed6e3);
+            color: #1a1a2e;
+        }
+
+        .btn-sm {
+            padding: 8px 16px;
+            font-size: 0.85rem;
+        }
+
+        .file-list {
+            max-height: 500px;
+            overflow-y: auto;
+            min-height: 200px;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            margin-bottom: 10px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 12px;
+            transition: all 0.3s;
+            flex-wrap: wrap;
+            gap: 15px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .file-item:hover {
+            background: rgba(255,255,255,0.15);
+            transform: translateX(8px);
+            border-color: rgba(255,255,255,0.2);
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .file-info i {
+            font-size: 1.3rem;
+            color: #4facfe;
+        }
+
+        .file-details {
+            flex: 1;
+        }
+
+        .file-name {
+            font-family: monospace;
+            font-size: 0.95rem;
+            font-weight: 500;
+            word-break: break-all;
+            color: #e0e0e0;
+        }
+
+        .file-size {
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.5);
+            margin-top: 3px;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .upload-section {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 15px;
+            align-items: end;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            width: 100%;
+        }
+
+        .file-input-wrapper input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: rgba(0,0,0,0.95);
+            border-radius: 20px;
+            width: 90%;
+            max-width: 900px;
+            max-height: 85vh;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.2);
+            animation: fadeInUp 0.3s ease;
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            color: #fff;
+        }
+
+        .modal-header .close-modal {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .modal-header .close-modal:hover {
+            color: #ff6b6b;
+            transform: scale(1.1);
+        }
+
+        .modal-body {
+            padding: 20px;
+            overflow-y: auto;
+            max-height: 60vh;
+        }
+
+        .modal-body textarea {
+            width: 100%;
+            min-height: 400px;
+            background: #0a0a0a;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 10px;
+            color: #00ff88;
+            font-family: monospace;
+            font-size: 14px;
+            padding: 15px;
+            resize: vertical;
+        }
+
+        .modal-body textarea:focus {
+            outline: none;
+            border-color: #4facfe;
+        }
+
+        .modal-footer {
+            padding: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            justify-content: flex-end;
+            gap: 15px;
+        }
+
+        .loading-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+        }
+
+        .spinner-large {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: #4facfe;
+            border-right-color: #ff6b6b;
+            border-bottom-color: #fee140;
+            border-left-color: #00ff88;
+            animation: spin 1s linear infinite;
+        }
+
+        .loading-text {
+            margin-top: 20px;
+            color: rgba(255,255,255,0.7);
+            font-size: 1rem;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 25px;
+            border-radius: 12px;
+            z-index: 1000;
+            animation: slideInRight 0.3s ease;
+            border-left: 4px solid;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+        }
+
+        .toast.success {
+            border-left-color: #00ff88;
+        }
+
+        .toast.error {
+            border-left-color: #ff4444;
+        }
+
+        .toast.info {
+            border-left-color: #4facfe;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            opacity: 0.5;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.5);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);
+            border-radius: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8rem;
+            }
+            
+            .upload-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .file-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .file-actions {
+                align-self: flex-end;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .card {
+                padding: 15px;
+            }
+            
+            .modal-content {
+                width: 95%;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="canvas3d"></canvas>
+
+<div class="container">
+    <div class="header">
+        <h1><i class="fab fa-github"></i> JUBAYER - X GIT MANAGER</h1>
+        <p><i class="fas fa-cube"></i> Black Theme | Rainbow 3D Animation | GitHub File Manager</p>
+    </div>
+
+    <div class="card">
+        <h3><i class="fas fa-sliders-h"></i> GitHub Configuration</h3>
+        <div class="form-grid">
+            <div class="input-group">
+                <label><i class="fas fa-key"></i> Personal Access Token</label>
+                <input type="password" id="token" placeholder="ghp_xxxxxxxxxxxx">
+            </div>
+            <div class="input-group">
+                <label><i class="fas fa-user"></i> Owner / Username</label>
+                <input type="text" id="owner" placeholder="your-username" value="hemalmd817">
+            </div>
+            <div class="input-group">
+                <label><i class="fas fa-database"></i> Repository Name</label>
+                <input type="text" id="repo" placeholder="my-repo" value="1st-visit-api">
+            </div>
+            <div class="input-group">
+                <label><i class="fas fa-code-branch"></i> Branch</label>
+                <input type="text" id="branch" placeholder="main or master" value="main">
+            </div>
+        </div>
+        <button class="btn btn-primary" id="fetchBtn" style="margin-top: 20px; width: 100%;">
+            <i class="fas fa-folder-open"></i> FETCH FILES
+        </button>
+    </div>
+
+    <div class="card">
+        <h3><i class="fas fa-cloud-upload-alt"></i> Upload / Replace File</h3>
+        <div class="upload-section">
+            <div class="input-group">
+                <label><i class="fas fa-folder-open"></i> File Path (with extension)</label>
+                <input type="text" id="filePath" placeholder="example/folder/file.txt">
+            </div>
+            <div class="file-input-wrapper">
+                <button class="btn btn-success" id="selectFileBtn" style="width: 100%;">
+                    <i class="fas fa-file"></i> Select File
+                </button>
+                <input type="file" id="fileInput">
+            </div>
+            <button class="btn btn-warning" id="uploadBtn">
+                <i class="fas fa-cloud-upload-alt"></i> Upload / Replace
+            </button>
+        </div>
+    </div>
+
+    <div class="card">
+        <h3 style="display: flex; justify-content: space-between; align-items: center;">
+            <span><i class="fas fa-list"></i> Repository Files</span>
+            <button class="btn btn-sm btn-primary" id="refreshBtn" style="padding: 8px 16px;">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+        </h3>
+        <div id="fileListContainer" class="file-list">
+            <div class="empty-state">
+                <i class="fab fa-github"></i>
+                <p>Configure and click "FETCH FILES" to load repository contents</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3><i class="fas fa-edit"></i> Edit File: <span id="editFileName"></span></h3>
+            <button class="close-modal" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <textarea id="editFileContent" placeholder="File content will appear here..."></textarea>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+            <button class="btn btn-success" id="saveEditBtn">Save Changes</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+    // ============ 3D ANIMATION ============
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('canvas3d'), alpha: true });
+    
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+    
+    const particlesCount = 3000;
+    const positions = new Float32Array(particlesCount * 3);
+    const colors = new Float32Array(particlesCount * 3);
+    
+    for (let i = 0; i < particlesCount; i++) {
+        positions[i*3] = (Math.random() - 0.5) * 200;
+        positions[i*3+1] = (Math.random() - 0.5) * 100;
+        positions[i*3+2] = (Math.random() - 0.5) * 100;
+        const hue = (i / particlesCount) * 360;
+        const rgb = new THREE.Color(`hsl(${hue}, 100%, 50%)`);
+        colors[i*3] = rgb.r;
+        colors[i*3+1] = rgb.g;
+        colors[i*3+2] = rgb.b;
+    }
+    
+    const particlesGeometry = new THREE.BufferGeometry();
+    particlesGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    particlesGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    const particlesMaterial = new THREE.PointsMaterial({ size: 0.25, vertexColors: true, transparent: true, opacity: 0.8, blending: THREE.AdditiveBlending });
+    const particlesMesh = new THREE.Points(particlesGeometry, particlesMaterial);
+    scene.add(particlesMesh);
+    
+    const ringGeometry = new THREE.TorusGeometry(8, 0.3, 64, 200);
+    const ringMaterial = new THREE.MeshStandardMaterial({ color: 0xff0000, emissive: 0xff0000, emissiveIntensity: 0.5 });
+    const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+    scene.add(ring);
+    
+    const cubes = [];
+    const cubePositions = [
+        { x: -6, y: 3, z: -5, color: 0xff0000 }, { x: 6, y: -2, z: -5, color: 0xff7f00 },
+        { x: -4, y: -4, z: -8, color: 0xffff00 }, { x: 5, y: 4, z: -6, color: 0x00ff00 },
+        { x: -7, y: -1, z: -4, color: 0x0000ff }, { x: 3, y: -3, z: -7, color: 0x4b0082 },
+        { x: -2, y: 5, z: -6, color: 0x9400d3 }
+    ];
+    
+    cubePositions.forEach(pos => {
+        const geometry = new THREE.BoxGeometry(0.8, 0.8, 0.8);
+        const material = new THREE.MeshStandardMaterial({ color: pos.color, emissive: pos.color, emissiveIntensity: 0.3 });
+        const cube = new THREE.Mesh(geometry, material);
+        cube.position.set(pos.x, pos.y, pos.z);
+        scene.add(cube);
+        cubes.push(cube);
+    });
+    
+    const ambientLight = new THREE.AmbientLight(0x404040);
+    scene.add(ambientLight);
+    const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+    directionalLight.position.set(2, 5, 3);
+    scene.add(directionalLight);
+    const pointLight = new THREE.PointLight(0xff00ff, 0.5);
+    pointLight.position.set(0, 5, 5);
+    scene.add(pointLight);
+    
+    camera.position.z = 25;
+    camera.position.y = 3;
+    
+    let time = 0;
+    function animate3d() {
+        requestAnimationFrame(animate3d);
+        time += 0.008;
+        particlesMesh.rotation.y = time * 0.1;
+        particlesMesh.rotation.x = Math.sin(time * 0.2) * 0.1;
+        ring.rotation.x = time * 0.5;
+        ring.rotation.y = time * 0.3;
+        ring.rotation.z = time * 0.2;
+        const hue = (time * 50) % 360;
+        ring.material.color.setHSL(hue / 360, 1, 0.5);
+        ring.material.emissive.setHSL(hue / 360, 1, 0.3);
+        cubes.forEach((cube, idx) => {
+            cube.rotation.x = time * (idx + 1) * 0.5;
+            cube.rotation.y = time * (idx + 1) * 0.3;
+            cube.position.y += Math.sin(time * 2 + idx) * 0.005;
+        });
+        pointLight.intensity = 0.5 + Math.sin(time * 3) * 0.3;
+        renderer.render(scene, camera);
+    }
+    animate3d();
+    
+    window.addEventListener('resize', () => {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+    
+    // ============ APP LOGIC ============
+    let currentEditPath = null;
+    
+    function showToast(message, type = 'info') {
+        const existingToast = document.querySelector('.toast');
+        if(existingToast) existingToast.remove();
+        const toast = document.createElement('div');
+        toast.className = `toast ${type}`;
+        let icon = type === 'success' ? '<i class="fas fa-check-circle"></i>' : (type === 'error' ? '<i class="fas fa-exclamation-circle"></i>' : '<i class="fas fa-info-circle"></i>');
+        toast.innerHTML = `${icon} <span>${message}</span>`;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 4000);
+    }
+    
+    function showLoading() {
+        document.getElementById('fileListContainer').innerHTML = `
+            <div class="loading-container">
+                <div class="spinner-large"></div>
+                <div class="loading-text">Loading files...<span class="loading-dots"></span></div>
+            </div>
+        `;
+    }
+    
+    async function fetchFiles() {
+        const token = document.getElementById('token').value;
+        const owner = document.getElementById('owner').value;
+        const repo = document.getElementById('repo').value;
+        const branch = document.getElementById('branch').value;
+        
+        if(!token || !owner || !repo) {
+            showToast('Please fill Token, Owner and Repository!', 'error');
+            return;
+        }
+        
+        showLoading();
+        const btn = document.getElementById('fetchBtn');
+        const originalHtml = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Loading...';
+        btn.disabled = true;
+        
+        try {
+            const response = await fetch('/api/get-files', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token, owner, repo, branch })
+            });
+            const data = await response.json();
+            
+            if(data.success) {
+                displayFiles(data.files);
+                if(data.branch && !branch) document.getElementById('branch').value = data.branch;
+                showToast(`Loaded ${data.files.length} files!`, 'success');
+            } else {
+                showToast(data.error, 'error');
+                displayEmptyState();
+            }
+        } catch(error) {
+            showToast('Network error: ' + error.message, 'error');
+            displayEmptyState();
+        } finally {
+            btn.innerHTML = originalHtml;
+            btn.disabled = false;
+        }
+    }
+    
+    function displayEmptyState() {
+        document.getElementById('fileListContainer').innerHTML = `
+            <div class="empty-state"><i class="fab fa-github"></i><p>No files found or error loading repository</p></div>
+        `;
+    }
+    
+    function displayFiles(files) {
+        const container = document.getElementById('fileListContainer');
+        if(files.length === 0) {
+            container.innerHTML = `<div class="empty-state"><i class="fab fa-github"></i><p>No files found in this repository</p></div>`;
+            return;
+        }
+        
+        container.innerHTML = files.map(file => `
+            <div class="file-item">
+                <div class="file-info">
+                    <i class="fas fa-file-code"></i>
+                    <div class="file-details">
+                        <div class="file-name">${escapeHtml(file.path)}</div>
+                        <div class="file-size">${formatSize(file.size)}</div>
+                    </div>
+                </div>
+                <div class="file-actions">
+                    <button class="btn btn-sm btn-info" onclick="editFile('${escapeHtml(file.path)}')">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                    <button class="btn btn-sm btn-warning" onclick="prepareReplace('${escapeHtml(file.path)}')">
+                        <i class="fas fa-exchange-alt"></i> Replace
+                    </button>
+                    <button class="btn btn-sm btn-danger" onclick="deleteFileByName('${escapeHtml(file.path)}')">
+                        <i class="fas fa-trash-alt"></i> Remove
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    async function editFile(filePath) {
+        const token = document.getElementById('token').value;
+        const owner = document.getElementById('owner').value;
+        const repo = document.getElementById('repo').value;
+        const branch = document.getElementById('branch').value;
+        
+        if(!token || !owner || !repo) {
+            showToast('Please configure GitHub settings first!', 'error');
+            return;
+        }
+        
+        showToast(`Loading ${filePath}...`, 'info');
+        currentEditPath = filePath;
+        document.getElementById('editFileName').innerText = filePath;
+        document.getElementById('editFileContent').value = 'Loading...';
+        document.getElementById('editModal').style.display = 'flex';
+        
+        try {
+            const response = await fetch('/api/get-file-content', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token, owner, repo, branch, path: filePath })
+            });
+            const data = await response.json();
+            
+            if(data.success) {
+                if(data.is_binary) {
+                    document.getElementById('editFileContent').value = data.content;
+                    document.getElementById('editFileContent').disabled = true;
+                    showToast('This is a binary file - cannot edit', 'error');
+                } else {
+                    document.getElementById('editFileContent').value = data.content;
+                    document.getElementById('editFileContent').disabled = false;
+                }
+            } else {
+                showToast(data.error, 'error');
+                document.getElementById('editFileContent').value = 'Error loading file content';
+            }
+        } catch(error) {
+            showToast('Failed to load file: ' + error.message, 'error');
+            document.getElementById('editFileContent').value = 'Error loading file content';
+        }
+    }
+    
+    async function saveEditedFile() {
+        const token = document.getElementById('token').value;
+        const owner = document.getElementById('owner').value;
+        const repo = document.getElementById('repo').value;
+        const branch = document.getElementById('branch').value;
+        const newContent = document.getElementById('editFileContent').value;
+        
+        if(!currentEditPath) return;
+        
+        const saveBtn = document.getElementById('saveEditBtn');
+        const originalHtml = saveBtn.innerHTML;
+        saveBtn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Saving...';
+        saveBtn.disabled = true;
+        
+        try {
+            // Convert to base64
+            const base64Content = btoa(unescape(encodeURIComponent(newContent)));
+            
+            const response = await fetch('/api/update-file-content', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    token, owner, repo, branch,
+                    path: currentEditPath,
+                    content: base64Content
+                })
+            });
+            const data = await response.json();
+            
+            if(data.success) {
+                showToast(`File ${currentEditPath} updated successfully!`, 'success');
+                closeModal();
+                fetchFiles();
+            } else {
+                showToast(data.error, 'error');
+            }
+        } catch(error) {
+            showToast('Save failed: ' + error.message, 'error');
+        } finally {
+            saveBtn.innerHTML = originalHtml;
+            saveBtn.disabled = false;
+        }
+    }
+    
+    function closeModal() {
+        document.getElementById('editModal').style.display = 'none';
+        document.getElementById('editFileContent').value = '';
+        document.getElementById('editFileContent').disabled = false;
+        currentEditPath = null;
+    }
+    
+    function prepareReplace(path) {
+        document.getElementById('filePath').value = path;
+        document.getElementById('fileInput').click();
+        showToast(`Select file to replace: ${path}`, 'info');
+    }
+    
+    async function deleteFileByName(filePath) {
+        if(!confirm(`Are you sure you want to delete "${filePath}"?`)) return;
+        
+        const token = document.getElementById('token').value;
+        const owner = document.getElementById('owner').value;
+        const repo = document.getElementById('repo').value;
+        const branch = document.getElementById('branch').value;
+        
+        if(!token || !owner || !repo) {
+            showToast('Please configure GitHub settings first!', 'error');
+            return;
+        }
+        
+        showToast(`Deleting ${filePath}...`, 'info');
+        
+        try {
+            const response = await fetch('/api/delete-file', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token, owner, repo, branch, path: filePath })
+            });
+            const data = await response.json();
+            
+            if(data.success) {
+                showToast(`Deleted: ${filePath}`, 'success');
+                fetchFiles();
+            } else {
+                showToast(data.error, 'error');
+            }
+        } catch(error) {
+            showToast('Delete failed: ' + error.message, 'error');
+        }
+    }
+    
+    async function uploadFile() {
+        const token = document.getElementById('token').value;
+        const owner = document.getElementById('owner').value;
+        const repo = document.getElementById('repo').value;
+        const branch = document.getElementById('branch').value;
+        const filePath = document.getElementById('filePath').value;
+        const fileInput = document.getElementById('fileInput');
+        
+        if(!token || !owner || !repo) {
+            showToast('Please configure GitHub settings first!', 'error');
+            return;
+        }
+        
+        if(!filePath) {
+            showToast('Please enter file path!', 'error');
+            return;
+        }
+        
+        if(!fileInput.files[0]) {
+            showToast('Please select a file!', 'error');
+            return;
+        }
+        
+        const btn = document.getElementById('uploadBtn');
+        const originalHtml = btn.innerHTML;
+        btn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Uploading...';
+        btn.disabled = true;
+        
+        const reader = new FileReader();
+        reader.onload = async function(e) {
+            const content = e.target.result.split(',')[1]; // Get base64 without data: prefix
+            
+            try {
+                const response = await fetch('/api/upload-file', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        token, owner, repo, branch,
+                        path: filePath,
+                        content: content,
+                        message: `Upload/Update ${filePath}`
+                    })
+                });
+                const data = await response.json();
+                
+                if(data.success) {
+                    showToast(`${data.message}: ${filePath}`, 'success');
+                    document.getElementById('fileInput').value = '';
+                    document.getElementById('filePath').value = '';
+                    fetchFiles();
+                } else {
+                    showToast(data.error, 'error');
+                }
+            } catch(error) {
+                showToast('Upload failed: ' + error.message, 'error');
+            } finally {
+                btn.innerHTML = originalHtml;
+                btn.disabled = false;
+            }
+        };
+        reader.readAsDataURL(fileInput.files[0]);
+    }
+    
+    function formatSize(bytes) {
+        if(bytes < 1024) return bytes + ' B';
+        if(bytes < 1024*1024) return (bytes/1024).toFixed(1) + ' KB';
+        return (bytes/(1024*1024)).toFixed(1) + ' MB';
+    }
+    
+    function escapeHtml(str) {
+        return str.replace(/[&<>]/g, function(m) {
+            if(m === '&') return '&amp;';
+            if(m === '<') return '&lt;';
+            if(m === '>') return '&gt;';
+            return m;
+        });
+    }
+    
+    // Event Listeners
+    document.getElementById('fetchBtn').addEventListener('click', fetchFiles);
+    document.getElementById('refreshBtn').addEventListener('click', () => {
+        const token = document.getElementById('token').value;
+        if(token && document.getElementById('owner').value && document.getElementById('repo').value) {
+            showToast('Refreshing files...', 'info');
+            fetchFiles();
+        } else {
+            showToast('Please configure GitHub settings and fetch files first!', 'error');
+        }
+    });
+    document.getElementById('uploadBtn').addEventListener('click', uploadFile);
+    document.getElementById('saveEditBtn').addEventListener('click', saveEditedFile);
+    document.getElementById('selectFileBtn').addEventListener('click', () => {
+        if(!document.getElementById('filePath').value) {
+            showToast('Please enter file path first!', 'error');
+            return;
+        }
+        document.getElementById('fileInput').click();
+    });
+    
+    document.getElementById('fileInput').addEventListener('change', function() {
+        if(this.files[0] && document.getElementById('filePath').value) {
+            uploadFile();
+        } else if(this.files[0] && !document.getElementById('filePath').value) {
+            showToast('Please enter file path before selecting file!', 'error');
+            this.value = '';
+        }
+    });
+    
+    document.addEventListener('keydown', (e) => {
+        if(e.key === 'Escape' && document.getElementById('editModal').style.display === 'flex') {
+            closeModal();
+        }
+    });
+    
+    const inputs = ['token', 'owner', 'repo', 'branch'];
+    inputs.forEach(id => {
+        document.getElementById(id).addEventListener('keypress', (e) => {
+            if(e.key === 'Enter') fetchFiles();
+        });
+    });
+</script>
+</body>
+</html>
